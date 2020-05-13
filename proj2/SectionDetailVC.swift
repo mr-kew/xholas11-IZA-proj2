@@ -1,0 +1,47 @@
+//
+//  SectionDetailVC.swift
+//  proj2
+//
+//  Created by David on 13/05/2020.
+//
+
+import UIKit
+
+class SectionDetailVC: UITableViewController {
+    var section: Section?
+    var modelHandler: ModelHandler<Section>!
+
+    @IBOutlet weak var doneButton: UIBarButtonItem!
+    @IBOutlet weak var nameField: CustomTextField!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        tableView.allowsSelection = false
+        
+        if let section = section {
+            nameField.text = section.name
+        }
+    }
+    
+    @IBAction func doneTouched(_ sender: Any) {
+        if section == nil {
+            section = modelHandler.createModel()
+            section?.setOrder(handler: modelHandler)
+        }
+        section?.name = nameField.text
+        modelHandler.saveChanges()
+        
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func fieldEdited(_ sender: Any) {
+        doneButton.isEnabled = !(nameField.text?.isEmpty ?? true)
+    }
+}
+
+extension SectionDetailVC {
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+}

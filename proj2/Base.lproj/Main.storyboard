@@ -3,7 +3,6 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -70,13 +69,83 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <segue destination="OXP-gY-77t" kind="show" identifier="sectionSegue" id="2Z6-TU-T0v"/>
                         <segue destination="zJx-5U-ymk" kind="show" identifier="toolSegue" id="xRO-wt-8lN"/>
+                        <segue destination="vO1-xx-Kvk" kind="show" identifier="sectionSegue" id="Uy6-2m-aNG"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zoD-fp-dGt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1300" y="126.5625"/>
+        </scene>
+        <!--Section-->
+        <scene sceneID="nOy-gb-u8t">
+            <objects>
+                <tableViewController id="vO1-xx-Kvk" customClass="SectionDetailVC" customModule="proj2" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="sNW-xI-AO0">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <sections>
+                            <tableViewSection id="JtS-vV-7Ss">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="9oj-qw-4Iv">
+                                        <rect key="frame" x="0.0" y="18" width="414" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9oj-qw-4Iv" id="hwy-Ha-rEw">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="WvB-8f-nmm">
+                                                    <rect key="frame" x="20" y="11" width="374" height="21.5"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mqe-NT-ayv">
+                                                            <rect key="frame" x="0.0" y="0.0" width="187" height="21.5"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name of the section" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fck-Zy-Tbq" customClass="CustomTextField" customModule="proj2" customModuleProvider="target">
+                                                            <rect key="frame" x="187" y="0.0" width="187" height="21.5"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                                            <connections>
+                                                                <action selector="fieldEdited:" destination="vO1-xx-Kvk" eventType="editingDidEnd" id="Zmw-BX-DHL"/>
+                                                            </connections>
+                                                        </textField>
+                                                    </subviews>
+                                                </stackView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="WvB-8f-nmm" firstAttribute="leading" secondItem="hwy-Ha-rEw" secondAttribute="leadingMargin" id="5vf-c9-Opt"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="WvB-8f-nmm" secondAttribute="trailing" id="cjU-0y-k4Q"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="WvB-8f-nmm" secondAttribute="bottom" id="gy5-bM-eVp"/>
+                                                <constraint firstItem="WvB-8f-nmm" firstAttribute="top" secondItem="hwy-Ha-rEw" secondAttribute="topMargin" id="uRW-e9-TRn"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                        </sections>
+                        <connections>
+                            <outlet property="dataSource" destination="vO1-xx-Kvk" id="hd7-hv-NfO"/>
+                            <outlet property="delegate" destination="vO1-xx-Kvk" id="Wyd-Kc-Ylx"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Section" largeTitleDisplayMode="never" id="SIB-kw-7lV">
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" style="done" systemItem="done" id="xVj-s6-Yxg">
+                            <connections>
+                                <action selector="doneTouched:" destination="vO1-xx-Kvk" id="MN8-Pa-PIS"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="doneButton" destination="xVj-s6-Yxg" id="i5j-p6-1Hz"/>
+                        <outlet property="nameField" destination="Fck-Zy-Tbq" id="X8P-xS-PRD"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Gg-ge-yec" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2212" y="-280"/>
         </scene>
         <!--Tool-->
         <scene sceneID="kId-Dr-OFc">
@@ -105,10 +174,10 @@
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name of the tool" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W8e-fh-WIQ">
+                                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name of the tool" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W8e-fh-WIQ" customClass="CustomTextField" customModule="proj2" customModuleProvider="target">
                                                             <rect key="frame" x="187" y="0.0" width="187" height="21.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <textInputTraits key="textInputTraits"/>
+                                                            <textInputTraits key="textInputTraits" returnKeyType="done"/>
                                                             <connections>
                                                                 <action selector="fieldEdited:" destination="zJx-5U-ymk" eventType="editingDidEnd" id="8EN-SU-T9p"/>
                                                             </connections>
@@ -140,10 +209,10 @@
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name of the section" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UFR-2B-hVN">
+                                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name of the section" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UFR-2B-hVN" customClass="CustomTextField" customModule="proj2" customModuleProvider="target">
                                                             <rect key="frame" x="187" y="0.0" width="187" height="21.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <textInputTraits key="textInputTraits"/>
+                                                            <textInputTraits key="textInputTraits" returnKeyType="done"/>
                                                             <connections>
                                                                 <action selector="fieldEdited:" destination="zJx-5U-ymk" eventType="editingDidEnd" id="9ij-mS-urt"/>
                                                             </connections>
@@ -204,22 +273,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rak-mb-FXH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2212" y="445"/>
-        </scene>
-        <!--Section-->
-        <scene sceneID="xtr-Xv-tsz">
-            <objects>
-                <viewController id="OXP-gY-77t" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="oE9-uO-6e3">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="uev-3d-9Kt"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Section" largeTitleDisplayMode="never" id="hRS-3g-7Qc"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="RsQ-bo-nvd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2212" y="-291"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Co9-zW-4WB">

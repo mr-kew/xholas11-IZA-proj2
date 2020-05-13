@@ -10,8 +10,11 @@ import CoreData
 
 class ToolboxTableVC: UITableViewController {
     var toolModelHandler: ModelHandler<Tool>!
+    var sectionModelHandler: ModelHandler<Section>!
 
-    private var sections: [String] = ["Screws", "Bolts", "Nuts", "Plates"]
+    private var sections: [Section] {
+        return sectionModelHandler.fetchController.fetchedObjects ?? []
+    }
     private var items: [Tool] {
         return toolModelHandler.fetchController.fetchedObjects ?? []
     }
@@ -43,6 +46,7 @@ class ToolboxTableVC: UITableViewController {
         super.viewWillAppear(animated)
         
         toolModelHandler.performFetch()
+        sectionModelHandler.performFetch()
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -58,14 +62,19 @@ class ToolboxTableVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isEditing {
-            performSegue(withIdentifier: "sectionSegue", sender: nil)
+            var section: Section?
+            if indexPath.row < sections.endIndex {
+                section = sections[indexPath.row]
+            }
+            performSegue(withIdentifier: "sectionSegue", sender: section)
         } else {
             performSegue(withIdentifier: "toolSegue", sender: items[indexPath.row])
         }
     }
     
     private func setupHandlers() {
-        toolModelHandler = ModelHandler<Tool>(delegate: self)
+        toolModelHandler = ModelHandler<Tool>(delegate: self, sorted: NSSortDescriptor(key: "name", ascending: true))
+        sectionModelHandler = ModelHandler<Section>(delegate: self, sorted: NSSortDescriptor(key: "order", ascending: true))
     }
     
     private func updateTableView(editing: Bool) {
@@ -111,9 +120,14 @@ class ToolboxTableVC: UITableViewController {
         if let dest = segue.destination as? ToolDetailVC {
             dest.tool = sender as? Tool
             dest.modelHandler = toolModelHandler
+        } else if let dest = segue.destination as? SectionDetailVC {
+            dest.section = sender as? Section
+            dest.modelHandler = sectionModelHandler
         }
     }
 }
+
+// MARK: Table settings
 
 extension ToolboxTableVC {
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -134,7 +148,7 @@ extension ToolboxTableVC {
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if !isEditing {
-            return sections[section]
+            return sections[section].name
         }
         return nil
     }
@@ -146,7 +160,7 @@ extension ToolboxTableVC {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToolCell", for: indexPath)
         if isEditing {
-            cell.textLabel?.text = sections[indexPath.row]
+            cell.textLabel?.text = sections[indexPath.row].name
             cell.accessoryType = .disclosureIndicator
         } else {
             cell.textLabel?.text = items[indexPath.row].name
@@ -161,16 +175,19 @@ extension ToolboxTableVC {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         switch editingStyle {
         case .delete:
-            sections.remove(at: indexPath.row)
+            sectionModelHandler.remove(model: sections[indexPath.row])
+            sectionModelHandler.performFetch()
             tableView.deleteRows(at: [indexPath], with: .automatic)
+
+            sectionModelHandler.saveChanges()
         default:
             break;
         }
     }
     
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let item = sections.remove(at: sourceIndexPath.row)
-        sections.insert(item, at: destinationIndexPath.row)
+        reorder(sections, source: sourceIndexPath.row, destination: destinationIndexPath.row)
+        sectionModelHandler.saveChanges()
     }
     
     override func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
@@ -182,6 +199,19 @@ extension ToolboxTableVC {
     
     private func isEditable(indexPath: IndexPath) -> Bool {
         return indexPath.row < sections.endIndex
+    }
+    
+    private func reorder(_ array: [Section], source: Int, destination: Int) {
+        array[source].order = array[destination].order
+        if source < destination {
+            for index in (source+1)...destination {
+                array[index].order -= 1
+            }
+        } else {
+            for index in destination..<source {
+                array[index].order += 1
+            }
+        }
     }
 }
 

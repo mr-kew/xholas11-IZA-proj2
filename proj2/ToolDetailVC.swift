@@ -12,8 +12,8 @@ class ToolDetailVC: UITableViewController {
     var modelHandler: ModelHandler<Tool>!
     
     @IBOutlet weak var doneButton: UIBarButtonItem!
-    @IBOutlet weak var nameField: UITextField!
-    @IBOutlet weak var sectionField: UITextField!
+    @IBOutlet weak var nameField: CustomTextField!
+    @IBOutlet weak var sectionField: CustomTextField!
     
     let removeButtonIndexPath = IndexPath(row: 0, section: 1)
     
@@ -29,7 +29,7 @@ class ToolDetailVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         modelHandler.remove(model: tool!)
-        modelHandler.saveContext()
+        modelHandler.saveChanges()
         
         pop()
     }
@@ -40,7 +40,7 @@ class ToolDetailVC: UITableViewController {
         }
         tool?.name = nameField.text
         tool?.section = sectionField.text
-        modelHandler.saveContext()
+        modelHandler.saveChanges()
         
         pop()
     }

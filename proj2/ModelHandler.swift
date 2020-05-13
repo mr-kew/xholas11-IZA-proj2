@@ -12,17 +12,20 @@ import UIKit
 class ModelHandler<T: NSManagedObject> {
     lazy var fetchController: NSFetchedResultsController<T> = {
         let fetchRequest = NSFetchRequest<T>(entityName: String(describing: T.self))
-        fetchRequest.sortDescriptors = [ NSSortDescriptor(key: "name", ascending: true) ]
+        fetchRequest.sortDescriptors = [ sortDescriptor ]
         
         let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: ModelHandler.moc, sectionNameKeyPath: nil, cacheName: nil)
         return frc
     }()
     
+    private let sortDescriptor: NSSortDescriptor
+    
     static var moc: NSManagedObjectContext {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     }
     
-    init(delegate: NSFetchedResultsControllerDelegate?) {
+    init(delegate: NSFetchedResultsControllerDelegate?, sorted: NSSortDescriptor) {
+        sortDescriptor = sorted
         fetchController.delegate = delegate
     }
     
@@ -42,11 +45,17 @@ class ModelHandler<T: NSManagedObject> {
         ModelHandler.moc.delete(model)
     }
     
-    func saveContext() {
+    func saveChanges() {
         do {
             try ModelHandler.moc.save()
         } catch {
             print(error)
         }
+    }
+}
+
+extension Section {
+    func setOrder(handler: ModelHandler<Section>) {
+        self.order = Int64(handler.fetchController.fetchedObjects?.count ?? 0)
     }
 }
