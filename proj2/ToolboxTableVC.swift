@@ -9,26 +9,40 @@ import UIKit
 import CoreData
 
 class ToolboxTableVC: UITableViewController {
+    var toolModelHandler: ModelHandler<Tool>!
 
     private var sections: [String] = ["Screws", "Bolts", "Nuts", "Plates"]
     private var items: [Tool] {
-        return ModelHandler.shared.fetchController.fetchedObjects ?? []
+        return toolModelHandler.fetchController.fetchedObjects ?? []
     }
 
+    override init(style: UITableView.Style) {
+        super.init(style: style)
+        setupHandlers()
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        setupHandlers()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupHandlers()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.leftBarButtonItem = editButtonItem
         tableView.allowsSelectionDuringEditing = true
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        ModelHandler.shared.fetchController.delegate = self
-        
-        ModelHandler.shared.performFetch()
+        toolModelHandler.performFetch()
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -48,6 +62,10 @@ class ToolboxTableVC: UITableViewController {
         } else {
             performSegue(withIdentifier: "toolSegue", sender: items[indexPath.row])
         }
+    }
+    
+    private func setupHandlers() {
+        toolModelHandler = ModelHandler<Tool>(delegate: self)
     }
     
     private func updateTableView(editing: Bool) {
@@ -92,6 +110,7 @@ class ToolboxTableVC: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let dest = segue.destination as? ToolDetailVC {
             dest.tool = sender as? Tool
+            dest.modelHandler = toolModelHandler
         }
     }
 }

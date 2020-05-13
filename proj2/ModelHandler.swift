@@ -9,11 +9,9 @@ import Foundation
 import CoreData
 import UIKit
 
-class ModelHandler {
-    static var shared = ModelHandler()
-    
-    lazy var fetchController: NSFetchedResultsController<Tool> = {
-        let fetchRequest = NSFetchRequest<Tool>(entityName: "Tool")
+class ModelHandler<T: NSManagedObject> {
+    lazy var fetchController: NSFetchedResultsController<T> = {
+        let fetchRequest = NSFetchRequest<T>(entityName: String(describing: T.self))
         fetchRequest.sortDescriptors = [ NSSortDescriptor(key: "name", ascending: true) ]
         
         let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: ModelHandler.moc, sectionNameKeyPath: nil, cacheName: nil)
@@ -24,8 +22,8 @@ class ModelHandler {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     }
     
-    private init() {
-        
+    init(delegate: NSFetchedResultsControllerDelegate?) {
+        fetchController.delegate = delegate
     }
     
     func performFetch() {
@@ -36,21 +34,12 @@ class ModelHandler {
         }
     }
     
-    func addTool(name: String) {
-        let tool = Tool(context: ModelHandler.moc)
-        tool.name = name
-        
-        saveContext()
+    func createModel() -> T {
+        return T(context: ModelHandler.moc)
     }
     
-    func editTool(name: String) {
-        
-    }
-    
-    func removeTool(tool: Tool) {
-        ModelHandler.moc.delete(tool)
-        
-        saveContext()
+    func remove(model: T) {
+        ModelHandler.moc.delete(model)
     }
     
     func saveContext() {
