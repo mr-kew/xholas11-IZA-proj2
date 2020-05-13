@@ -97,14 +97,40 @@
         <!--Edit tool-->
         <scene sceneID="fFk-iN-yff">
             <objects>
-                <viewController id="KiH-wN-6fK" sceneMemberID="viewController">
+                <viewController id="KiH-wN-6fK" customClass="ToolDetailVC" customModule="proj2" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Q4o-In-Fwm">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gt7-Ev-Sby">
+                                <rect key="frame" x="152" y="298" width="97" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E9F-24-4e5">
+                                <rect key="frame" x="153" y="542" width="45" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Delete"/>
+                                <connections>
+                                    <action selector="removeTouched:" destination="KiH-wN-6fK" eventType="touchUpInside" id="Ekp-ql-2jT"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="sPz-bK-m7e"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Edit tool" id="XLp-ds-1BW"/>
+                    <navigationItem key="navigationItem" title="Edit tool" id="XLp-ds-1BW">
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="I5n-29-tow">
+                            <connections>
+                                <action selector="doneTouched:" destination="KiH-wN-6fK" id="uhJ-cf-5e6"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="nameField" destination="gt7-Ev-Sby" id="w7t-ZF-ToY"/>
+                        <outlet property="removeButton" destination="E9F-24-4e5" id="5di-Ah-VmC"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jVb-b2-tsd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -115,8 +141,8 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="CnB-Sx-XnY" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Pli-Mo-n3K">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="Pli-Mo-n3K">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

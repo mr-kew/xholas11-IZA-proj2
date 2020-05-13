@@ -6,17 +6,29 @@
 //
 
 import UIKit
+import CoreData
 
 class ToolboxTableVC: UITableViewController {
 
-    private var fakeSections: [String] = ["Screws", "Bolts", "Nuts", "Plates"]
-    private var fakeItems: [String] = ["One", "Two", "Three", "Four"]
+    private var sections: [String] = ["Screws", "Bolts", "Nuts", "Plates"]
+    private var items: [Tool] {
+        return ModelHandler.shared.fetchController.fetchedObjects ?? []
+    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.leftBarButtonItem = editButtonItem
         tableView.allowsSelectionDuringEditing = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        ModelHandler.shared.fetchController.delegate = self
+        
+        ModelHandler.shared.performFetch()
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -34,27 +46,27 @@ class ToolboxTableVC: UITableViewController {
         if isEditing {
             performSegue(withIdentifier: "sectionSegue", sender: nil)
         } else {
-            performSegue(withIdentifier: "toolSegue", sender: nil)
+            performSegue(withIdentifier: "toolSegue", sender: items[indexPath.row])
         }
     }
     
     private func updateTableView(editing: Bool) {
         tableView.beginUpdates()
 
-        if fakeSections.count > 1 {
-            let set = IndexSet(fakeSections.indices.dropFirst())
+        if sections.count > 1 {
+            let set = IndexSet(sections.indices.dropFirst())
             insertOrDeleteSections(set, with: .fade, insertIf: !editing)
             tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .fade)
-        } else if fakeSections.count < 1 {
+        } else if sections.count < 1 {
             insertOrDeleteSections(IndexSet(arrayLiteral: 0), with: .fade, insertIf: editing)
         }
         
-        let editSectionsCount = fakeSections.count + 1
-        if fakeItems.count > editSectionsCount {
-            let paths = (editSectionsCount..<fakeItems.count).map{ IndexPath(row: $0, section: 0) }
+        let editSectionsCount = sections.count + 1
+        if items.count > editSectionsCount {
+            let paths = (editSectionsCount..<items.count).map{ IndexPath(row: $0, section: 0) }
             insertOrDeleteRows(at: paths, with: .fade, insertIf: !editing)
-        } else if fakeItems.count < editSectionsCount {
-            let paths = (fakeItems.count..<editSectionsCount).map{ IndexPath(row: $0, section: 0) }
+        } else if items.count < editSectionsCount {
+            let paths = (items.count..<editSectionsCount).map{ IndexPath(row: $0, section: 0) }
             insertOrDeleteRows(at: paths, with: .fade, insertIf: editing)
         }
         
@@ -76,6 +88,12 @@ class ToolboxTableVC: UITableViewController {
             tableView.deleteRows(at: indexPaths, with: animation)
         }
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let dest = segue.destination as? ToolDetailVC {
+            dest.tool = sender as? Tool
+        }
+    }
 }
 
 extension ToolboxTableVC {
@@ -83,21 +101,21 @@ extension ToolboxTableVC {
         if isEditing {
             return 1
         } else {
-            return fakeSections.count
+            return sections.count
         }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isEditing {
-            return fakeSections.count + 1
+            return sections.count + 1
         } else {
-            return fakeItems.count
+            return items.count
         }
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if !isEditing {
-            return fakeSections[section]
+            return sections[section]
         }
         return nil
     }
@@ -109,10 +127,10 @@ extension ToolboxTableVC {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToolCell", for: indexPath)
         if isEditing {
-            cell.textLabel?.text = fakeSections[indexPath.row]
+            cell.textLabel?.text = sections[indexPath.row]
             cell.accessoryType = .disclosureIndicator
         } else {
-            cell.textLabel?.text = "Item \(indexPath.row + 1)"
+            cell.textLabel?.text = items[indexPath.row].name
         }
         return cell
     }
@@ -124,7 +142,7 @@ extension ToolboxTableVC {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         switch editingStyle {
         case .delete:
-            fakeSections.remove(at: indexPath.row)
+            sections.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         default:
             break;
@@ -132,19 +150,25 @@ extension ToolboxTableVC {
     }
     
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let item = fakeSections.remove(at: sourceIndexPath.row)
-        fakeSections.insert(item, at: destinationIndexPath.row)
+        let item = sections.remove(at: sourceIndexPath.row)
+        sections.insert(item, at: destinationIndexPath.row)
     }
     
     override func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
         if !isEditable(indexPath: proposedDestinationIndexPath) {
-            return IndexPath(row: fakeSections.endIndex - 1, section: 0)
+            return IndexPath(row: sections.endIndex - 1, section: 0)
         }
         return proposedDestinationIndexPath
     }
     
     private func isEditable(indexPath: IndexPath) -> Bool {
-        return indexPath.row < fakeSections.endIndex
+        return indexPath.row < sections.endIndex
+    }
+}
+
+extension ToolboxTableVC: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.reloadData()
     }
 }
 
