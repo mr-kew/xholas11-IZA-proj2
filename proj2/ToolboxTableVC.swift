@@ -12,9 +12,6 @@ class ToolboxTableVC: UITableViewController {
     private var sections: [Section] {
         return SharedHandlers.sections.models
     }
-    /*private var items: [Tool] {
-        return SharedHandlers.tools.models
-    }*/
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +23,8 @@ class ToolboxTableVC: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        SharedHandlers.sections.discardChanges()
         
         SharedHandlers.sections.delegate = self
     

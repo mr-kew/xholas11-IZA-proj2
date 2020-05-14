@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6313217D246D3A630042B92A /* SectionsTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6313217C246D3A630042B92A /* SectionsTableVC.swift */; };
 		631EA6C8246C733D003E5442 /* SectionDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631EA6C7246C733D003E5442 /* SectionDetailVC.swift */; };
 		631EA6CA246C7586003E5442 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631EA6C9246C7586003E5442 /* CustomTextField.swift */; };
 		636D278E246C2D4F00021AC4 /* ToolDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636D278D246C2D4F00021AC4 /* ToolDetailVC.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6313217C246D3A630042B92A /* SectionsTableVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionsTableVC.swift; sourceTree = "<group>"; };
 		631EA6C7246C733D003E5442 /* SectionDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionDetailVC.swift; sourceTree = "<group>"; };
 		631EA6C9246C7586003E5442 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		636D278D246C2D4F00021AC4 /* ToolDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolDetailVC.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 				6373CF3D246B64B800C5A70C /* ToolboxTableVC.swift */,
 				631EA6C7246C733D003E5442 /* SectionDetailVC.swift */,
 				636D278D246C2D4F00021AC4 /* ToolDetailVC.swift */,
+				6313217C246D3A630042B92A /* SectionsTableVC.swift */,
 				6373CF45246B64BB00C5A70C /* Assets.xcassets */,
 				6373CF47246B64BB00C5A70C /* LaunchScreen.storyboard */,
 				6373CF4A246B64BB00C5A70C /* Info.plist */,
@@ -159,6 +162,7 @@
 				631EA6CA246C7586003E5442 /* CustomTextField.swift in Sources */,
 				6373CF3C246B64B800C5A70C /* SceneDelegate.swift in Sources */,
 				631EA6C8246C733D003E5442 /* SectionDetailVC.swift in Sources */,
+				6313217D246D3A630042B92A /* SectionsTableVC.swift in Sources */,
 				6373CF44246B64B800C5A70C /* proj2.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

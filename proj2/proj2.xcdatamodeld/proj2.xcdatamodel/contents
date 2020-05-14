@@ -3,15 +3,17 @@
     <entity name="Section" representedClassName="Section" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="order" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="contains" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Tool" inverseName="belongs" inverseEntity="Tool"/>
+        <relationship name="contains" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Tool" inverseName="belongs" inverseEntity="Tool"/>
     </entity>
     <entity name="Tool" representedClassName="Tool" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="section" optional="YES" attributeType="String"/>
+        <attribute name="serialNumber" optional="YES" attributeType="String"/>
+        <attribute name="use" optional="YES" attributeType="String"/>
+        <attribute name="weight" optional="YES" attributeType="Integer 64" usesScalarValueType="YES"/>
         <relationship name="belongs" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Section" inverseName="contains" inverseEntity="Section"/>
     </entity>
     <elements>
         <element name="Section" positionX="-63" positionY="0" width="128" height="88"/>
-        <element name="Tool" positionX="-63" positionY="-18" width="128" height="88"/>
+        <element name="Tool" positionX="-63" positionY="-18" width="128" height="118"/>
     </elements>
 </model>

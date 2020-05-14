@@ -12,6 +12,10 @@ import UIKit
 class SharedHandlers {
     static let tools = ModelHandler<Tool>(sorted: NSSortDescriptor(key: "name", ascending: true))
     static let sections = ModelHandler<Section>(sorted: NSSortDescriptor(key: "order", ascending: true))
+    
+    private init() {
+        
+    }
 }
 
 class ModelHandler<T: NSManagedObject> {
@@ -69,14 +73,14 @@ class ModelHandler<T: NSManagedObject> {
             print(error)
         }
     }
+    
+    func discardChanges() {
+        ModelHandler.moc.rollback()
+    }
 }
 
 extension ModelHandler where T == Section {
     func getOrder() -> Int64 {
         return Int64(self.models.count)
     }
-    
-    /*func setOrder(handler: ModelHandler<Section>) {
-        self.order = Int64(handler.models.count ?? 0)
-    }*/
 }

@@ -17,6 +17,12 @@ class SectionDetailVC: UITableViewController {
         super.viewDidLoad()
 
         tableView.allowsSelection = false
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        SharedHandlers.tools.discardChanges()
         
         if let section = section {
             nameField.text = section.name
