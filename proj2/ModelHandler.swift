@@ -9,8 +9,17 @@ import Foundation
 import CoreData
 import UIKit
 
+class SharedHandlers {
+    static let tools = ModelHandler<Tool>(sorted: NSSortDescriptor(key: "name", ascending: true))
+    static let sections = ModelHandler<Section>(sorted: NSSortDescriptor(key: "order", ascending: true))
+}
+
 class ModelHandler<T: NSManagedObject> {
-    lazy var fetchController: NSFetchedResultsController<T> = {
+    var models: [T] {
+        return fetchController.fetchedObjects ?? []
+    }
+    
+    private lazy var fetchController: NSFetchedResultsController<T> = {
         let fetchRequest = NSFetchRequest<T>(entityName: String(describing: T.self))
         fetchRequest.sortDescriptors = [ sortDescriptor ]
         
@@ -18,15 +27,23 @@ class ModelHandler<T: NSManagedObject> {
         return frc
     }()
     
-    private let sortDescriptor: NSSortDescriptor
+    var delegate: NSFetchedResultsControllerDelegate? {
+        get {
+            return fetchController.delegate
+        }
+        set {
+            fetchController.delegate = newValue
+        }
+    }
+    
+    let sortDescriptor: NSSortDescriptor
     
     static var moc: NSManagedObjectContext {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     }
     
-    init(delegate: NSFetchedResultsControllerDelegate?, sorted: NSSortDescriptor) {
+    fileprivate init(sorted: NSSortDescriptor) {
         sortDescriptor = sorted
-        fetchController.delegate = delegate
     }
     
     func performFetch() {
@@ -54,8 +71,12 @@ class ModelHandler<T: NSManagedObject> {
     }
 }
 
-extension Section {
-    func setOrder(handler: ModelHandler<Section>) {
-        self.order = Int64(handler.fetchController.fetchedObjects?.count ?? 0)
+extension ModelHandler where T == Section {
+    func getOrder() -> Int64 {
+        return Int64(self.models.count)
     }
+    
+    /*func setOrder(handler: ModelHandler<Section>) {
+        self.order = Int64(handler.models.count ?? 0)
+    }*/
 }

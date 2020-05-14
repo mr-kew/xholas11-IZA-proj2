@@ -9,7 +9,6 @@ import UIKit
 
 class SectionDetailVC: UITableViewController {
     var section: Section?
-    var modelHandler: ModelHandler<Section>!
 
     @IBOutlet weak var doneButton: UIBarButtonItem!
     @IBOutlet weak var nameField: CustomTextField!
@@ -26,11 +25,11 @@ class SectionDetailVC: UITableViewController {
     
     @IBAction func doneTouched(_ sender: Any) {
         if section == nil {
-            section = modelHandler.createModel()
-            section?.setOrder(handler: modelHandler)
+            section = SharedHandlers.sections.createModel()
+            section?.order = SharedHandlers.sections.getOrder()
         }
         section?.name = nameField.text
-        modelHandler.saveChanges()
+        SharedHandlers.sections.saveChanges()
         
         navigationController?.popViewController(animated: true)
     }

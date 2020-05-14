@@ -9,30 +9,12 @@ import UIKit
 import CoreData
 
 class ToolboxTableVC: UITableViewController {
-    var toolModelHandler: ModelHandler<Tool>!
-    var sectionModelHandler: ModelHandler<Section>!
-
     private var sections: [Section] {
-        return sectionModelHandler.fetchController.fetchedObjects ?? []
+        return SharedHandlers.sections.models
     }
-    private var items: [Tool] {
-        return toolModelHandler.fetchController.fetchedObjects ?? []
-    }
-
-    override init(style: UITableView.Style) {
-        super.init(style: style)
-        setupHandlers()
-    }
-    
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        setupHandlers()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupHandlers()
-    }
+    /*private var items: [Tool] {
+        return SharedHandlers.tools.models
+    }*/
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,8 +27,9 @@ class ToolboxTableVC: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        toolModelHandler.performFetch()
-        sectionModelHandler.performFetch()
+        SharedHandlers.sections.delegate = self
+    
+        SharedHandlers.sections.performFetch()
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -68,13 +51,15 @@ class ToolboxTableVC: UITableViewController {
             }
             performSegue(withIdentifier: "sectionSegue", sender: section)
         } else {
-            performSegue(withIdentifier: "toolSegue", sender: items[indexPath.row])
+            performSegue(withIdentifier: "toolSegue", sender: getTool(at: indexPath))
         }
     }
     
-    private func setupHandlers() {
-        toolModelHandler = ModelHandler<Tool>(delegate: self, sorted: NSSortDescriptor(key: "name", ascending: true))
-        sectionModelHandler = ModelHandler<Section>(delegate: self, sorted: NSSortDescriptor(key: "order", ascending: true))
+    private func getTool(at indexPath: IndexPath) -> Tool? {
+        guard !sections.isEmpty, sections[indexPath.section].contains?.count ?? 0 > 0  else {
+            return nil
+        }
+        return sections[indexPath.section].contains?[indexPath.row] as? Tool
     }
     
     private func updateTableView(editing: Bool) {
@@ -86,14 +71,17 @@ class ToolboxTableVC: UITableViewController {
             tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .fade)
         } else if sections.count < 1 {
             insertOrDeleteSections(IndexSet(arrayLiteral: 0), with: .fade, insertIf: editing)
+        } else {
+            tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .fade)
         }
         
         let editSectionsCount = sections.count + 1
-        if items.count > editSectionsCount {
-            let paths = (editSectionsCount..<items.count).map{ IndexPath(row: $0, section: 0) }
+        let itemsCount = sections.first?.contains?.count ?? 0
+        if itemsCount > editSectionsCount {
+            let paths = (editSectionsCount..<itemsCount).map{ IndexPath(row: $0, section: 0) }
             insertOrDeleteRows(at: paths, with: .fade, insertIf: !editing)
-        } else if items.count < editSectionsCount {
-            let paths = (items.count..<editSectionsCount).map{ IndexPath(row: $0, section: 0) }
+        } else if itemsCount < editSectionsCount {
+            let paths = (itemsCount..<editSectionsCount).map{ IndexPath(row: $0, section: 0) }
             insertOrDeleteRows(at: paths, with: .fade, insertIf: editing)
         }
         
@@ -119,10 +107,8 @@ class ToolboxTableVC: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let dest = segue.destination as? ToolDetailVC {
             dest.tool = sender as? Tool
-            dest.modelHandler = toolModelHandler
         } else if let dest = segue.destination as? SectionDetailVC {
             dest.section = sender as? Section
-            dest.modelHandler = sectionModelHandler
         }
     }
 }
@@ -142,7 +128,7 @@ extension ToolboxTableVC {
         if isEditing {
             return sections.count + 1
         } else {
-            return items.count
+            return sections[section].contains?.count ?? 0
         }
     }
     
@@ -161,9 +147,9 @@ extension ToolboxTableVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToolCell", for: indexPath)
         if isEditing {
             cell.textLabel?.text = sections[indexPath.row].name
-            cell.accessoryType = .disclosureIndicator
         } else {
-            cell.textLabel?.text = items[indexPath.row].name
+            cell.textLabel?.text = getTool(at: indexPath)?.name
+            cell.accessoryType = .disclosureIndicator
         }
         return cell
     }
@@ -175,11 +161,11 @@ extension ToolboxTableVC {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         switch editingStyle {
         case .delete:
-            sectionModelHandler.remove(model: sections[indexPath.row])
-            sectionModelHandler.performFetch()
+            SharedHandlers.sections.remove(model: sections[indexPath.row])
+            SharedHandlers.sections.performFetch()
             tableView.deleteRows(at: [indexPath], with: .automatic)
 
-            sectionModelHandler.saveChanges()
+            SharedHandlers.sections.saveChanges()
         default:
             break;
         }
@@ -187,7 +173,7 @@ extension ToolboxTableVC {
     
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         reorder(sections, source: sourceIndexPath.row, destination: destinationIndexPath.row)
-        sectionModelHandler.saveChanges()
+        SharedHandlers.sections.saveChanges()
     }
     
     override func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {

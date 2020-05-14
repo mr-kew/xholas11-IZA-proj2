@@ -9,7 +9,6 @@ import UIKit
 
 class ToolDetailVC: UITableViewController {
     var tool: Tool?
-    var modelHandler: ModelHandler<Tool>!
     
     @IBOutlet weak var doneButton: UIBarButtonItem!
     @IBOutlet weak var nameField: CustomTextField!
@@ -28,19 +27,19 @@ class ToolDetailVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        modelHandler.remove(model: tool!)
-        modelHandler.saveChanges()
+        SharedHandlers.tools.remove(model: tool!)
+        SharedHandlers.tools.saveChanges()
         
         pop()
     }
     
     @IBAction func doneTouched(_ sender: Any) {
         if tool == nil {
-            tool = modelHandler.createModel()
+            tool = SharedHandlers.tools.createModel()
         }
         tool?.name = nameField.text
-        tool?.section = sectionField.text
-        modelHandler.saveChanges()
+        tool?.belongs = SharedHandlers.sections.models.first{ $0.name == sectionField.text }
+        SharedHandlers.tools.saveChanges()
         
         pop()
     }
