@@ -17,9 +17,8 @@ Aplikace je implementována pomocí Storyboardu, skládá se ze čtyř scén obs
 ### ModelHandler
 Aplikace pracuje s dvěmi instancemi třídy _ModelHandler_, která obaluje instanci _NSFetchedResultsController_ a zajišťuje přístup k databázi. Jedna instance pro práci s nářadím (_Tool_) a jedna pro práci s přihrádkami (_Section_).
 
-#### Tvorba modelů
+#### Tvorba modelů
 Model je vytvořen volaním metody _createModel()_ na příslušné instanci třídy _ModelHandler_. Po vyplnění atributů vytvořeného modelu může být model uložen do databáze (voláním _saveChanges()_) nebo smazán (voláním _discardChanges()_).
 
 ### Řazení
 Pro změny pořádí přihrádek se používá číselný atribut _order_. Přihrádky se zobrazují seřazené podle tohoto atributu, takže pro změnu pořadí přihrádek stačí upravit jejich hodnoty atributu.
-
