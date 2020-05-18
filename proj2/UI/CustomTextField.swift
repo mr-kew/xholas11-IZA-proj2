@@ -23,6 +23,7 @@ class CustomTextField: UITextField, UITextFieldDelegate {
         delegate = self
     }
     
+    /// Hide keyboard when editing finished
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true

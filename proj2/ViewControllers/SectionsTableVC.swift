@@ -7,9 +7,12 @@
 
 import UIKit
 
+/// Displays list of all sections, one has to be selected for tool to be in
 class SectionsTableVC: UITableViewController {
+    /// Tool passed by ToolDetailVC, this VC will edit it's .belongs property
     var tool: Tool!
 
+    /// Last selected row to be deselected when new row is selected
     private var lastSelectedIndexPath: IndexPath?
     
     override func viewDidLoad() {
@@ -25,6 +28,8 @@ class SectionsTableVC: UITableViewController {
         }
     }
 }
+
+// MARK: Table Settings
 
 extension SectionsTableVC {
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -49,6 +54,7 @@ extension SectionsTableVC {
         return cell
     }
     
+    /// Deselects last row and selects new one
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tool.belongs = SharedHandlers.sections.models[indexPath.row]
         

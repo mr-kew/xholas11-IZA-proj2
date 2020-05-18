@@ -9,15 +9,17 @@ import Foundation
 import CoreData
 import UIKit
 
+/// Holds ModelHandler singletons
 class SharedHandlers {
     static let tools = ModelHandler<Tool>(sorted: NSSortDescriptor(key: "name", ascending: true))
     static let sections = ModelHandler<Section>(sorted: NSSortDescriptor(key: "order", ascending: true))
     
     private init() {
-        
+        // Cannot be instantiated
     }
 }
 
+/// Manages CoreData access for rest of the app using FetchedResultsController
 class ModelHandler<T: NSManagedObject> {
     var models: [T] {
         return fetchController.fetchedObjects ?? []
@@ -31,6 +33,7 @@ class ModelHandler<T: NSManagedObject> {
         return frc
     }()
     
+    /// Access to FetchedResultsController's delegate
     var delegate: NSFetchedResultsControllerDelegate? {
         get {
             return fetchController.delegate
@@ -42,6 +45,7 @@ class ModelHandler<T: NSManagedObject> {
     
     let sortDescriptor: NSSortDescriptor
     
+    /// Shortcut to ManagedObjectContext
     static var moc: NSManagedObjectContext {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     }
@@ -50,6 +54,7 @@ class ModelHandler<T: NSManagedObject> {
         sortDescriptor = sorted
     }
     
+    /// Fetches data from database
     func performFetch() {
         do{
             try fetchController.performFetch()
@@ -58,29 +63,41 @@ class ModelHandler<T: NSManagedObject> {
         }
     }
     
+    /// Creates new model, model should be edited and saved using saveChanges()
     func createModel() -> T {
         return T(context: ModelHandler.moc)
     }
     
+    /// Removes model from database
     func remove(model: T) {
         ModelHandler.moc.delete(model)
     }
     
-    func saveChanges() {
+    /// Saves changes to models, returns true on success
+    @discardableResult
+    func saveChanges() -> Bool {
         do {
             try ModelHandler.moc.save()
+            return true
         } catch {
             print(error)
         }
+        return false
     }
     
+    /// Discards all changes to models
     func discardChanges() {
         ModelHandler.moc.rollback()
     }
 }
 
 extension ModelHandler where T == Section {
+    /// Generates order value for newly created Sections
     func getOrder() -> Int64 {
-        return Int64(self.models.count)
+        let orders = self.models.map{ $0.order }
+        if let max = orders.max() {
+            return max
+        }
+        return 0
     }
 }

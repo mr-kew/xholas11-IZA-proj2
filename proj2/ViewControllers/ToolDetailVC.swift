@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Edits given tool, if section is nil new one will be created
 class ToolDetailVC: UITableViewController {
     var tool: Tool!
     
@@ -17,6 +18,7 @@ class ToolDetailVC: UITableViewController {
     @IBOutlet weak var useField: CustomTextField!
     @IBOutlet weak var sectionLabel: UILabel!
     
+    /// IndexPaths for special rows
     private let removeButtonIndexPath = IndexPath(row: 0, section: 1)
     private let sectionsRowIndexPath = IndexPath(row: 4, section: 0)
     
@@ -25,6 +27,7 @@ class ToolDetailVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Immediately creates new tool if none was passed
         if tool == nil {
             tool = SharedHandlers.tools.createModel()
             existing = false
@@ -33,7 +36,7 @@ class ToolDetailVC: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         nameField.text = tool.name
-        weightField.text = display(width: tool.weight)
+        weightField.text = display(weight: tool.weight)
         serialField.text = tool.serialNumber
         useField.text = tool.use
         sectionLabel.text = tool.belongs?.name
@@ -51,15 +54,13 @@ class ToolDetailVC: UITableViewController {
     }
     
     @IBAction func doneTouched(_ sender: Any) {
-        tool.name = nameField.text
-        tool.weight = Int64(weightField.text ?? "") ?? 0
-        tool.serialNumber = serialField.text
-        tool.use = useField.text
+        setToolFields()
         SharedHandlers.tools.saveChanges()
         
         pop()
     }
     
+    /// Done is disabled until all mandatory fields are filled (name has to be unique)
     @IBAction func fieldEdited(_ sender: Any) {
         doneButton.isEnabled = validInputs()
     }
@@ -69,6 +70,7 @@ class ToolDetailVC: UITableViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    /// Checks validity of all fields
     private func validInputs() -> Bool {
         let hasName = !(nameField.text?.isEmpty ?? true)
         let nameUnused = !SharedHandlers.tools.models.contains { $0.name == nameField.text }
@@ -76,24 +78,36 @@ class ToolDetailVC: UITableViewController {
         return hasName && nameUnused && hasSection
     }
     
-    private func display(width: Int64) -> String? {
-        guard width > 0 else {
+    private func display(weight: Int64) -> String? {
+        guard weight > 0 else {
             return nil
         }
-        return "\(width)"
+        return "\(weight)"
+    }
+    
+    /// Sets tool with values in fields
+    private func setToolFields() {
+        tool.name = nameField.text
+        tool.weight = Int64(weightField.text ?? "") ?? 0
+        tool.serialNumber = serialField.text
+        tool.use = useField.text
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let dest = segue.destination as? SectionsTableVC else {
             return
         }
-        tool.name = nameField.text
+        
+        setToolFields()
         dest.tool = tool
     }
 }
 
+// MARK: Table Settings
+
 extension ToolDetailVC {
     override func numberOfSections(in tableView: UITableView) -> Int {
+        // When editing existing tool, remove row will be displayed
         if existing {
             return 2
         } else {
@@ -101,6 +115,7 @@ extension ToolDetailVC {
         }
     }
     
+    /// Only special rows can be selected
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         if indexPath == removeButtonIndexPath || indexPath == sectionsRowIndexPath {
             return indexPath

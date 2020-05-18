@@ -7,7 +7,9 @@
 
 import UIKit
 
+/// Edits given section, if section is nil new one will be created
 class SectionDetailVC: UITableViewController {
+    /// Section reference passed from previous controller
     var section: Section?
 
     @IBOutlet weak var doneButton: UIBarButtonItem!
@@ -40,8 +42,12 @@ class SectionDetailVC: UITableViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    /// Done is disabled until all mandatory fields are filled (name has to be unique)
     @IBAction func fieldEdited(_ sender: Any) {
-        doneButton.isEnabled = !(nameField.text?.isEmpty ?? true)
+        let hasName = !(nameField.text?.isEmpty ?? true)
+        let nameUnused = !SharedHandlers.tools.models.contains { $0.name == nameField.text }
+        
+        doneButton.isEnabled = hasName && nameUnused
     }
 }
 

@@ -8,7 +8,9 @@
 import UIKit
 import CoreData
 
+/// Main table with tools in sections
 class ToolboxTableVC: UITableViewController {
+    // Quick access to all sections
     private var sections: [Section] {
         return SharedHandlers.sections.models
     }
@@ -18,24 +20,27 @@ class ToolboxTableVC: UITableViewController {
         
         navigationItem.leftBarButtonItem = editButtonItem
         tableView.allowsSelectionDuringEditing = true
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         SharedHandlers.sections.discardChanges()
-        
         SharedHandlers.sections.delegate = self
-    
         SharedHandlers.sections.performFetch()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        manageAddButton()
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         
         updateTableView(editing: editing)
-        navigationItem.rightBarButtonItem?.isEnabled = !editing
+        manageAddButton()
     }
     
     @IBAction func addToolTouched(_ sender: UIBarButtonItem) {
@@ -61,9 +66,21 @@ class ToolboxTableVC: UITableViewController {
         return sections[indexPath.section].contains?[indexPath.row] as? Tool
     }
     
+    /// Done button is disabled, if there are no sections
+    private func manageAddButton() {
+        navigationItem.rightBarButtonItem?.isEnabled = !isEditing && !sections.isEmpty
+    }
+    
+    /// Animates cells in place on start/end of editing
     private func updateTableView(editing: Bool) {
         tableView.beginUpdates()
-
+        updateRowsInFirstSection(editing: editing)
+        updateSections(editing: editing)
+        tableView.endUpdates()
+    }
+    
+    /// Animates rows in first section
+    private func updateRowsInFirstSection(editing: Bool) {
         if sections.count > 1 {
             let set = IndexSet(sections.indices.dropFirst())
             insertOrDeleteSections(set, with: .fade, insertIf: !editing)
@@ -73,7 +90,10 @@ class ToolboxTableVC: UITableViewController {
         } else {
             tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .fade)
         }
-        
+    }
+    
+    /// Animates all sections
+    private func updateSections(editing: Bool) {
         let editSectionsCount = sections.count + 1
         let itemsCount = sections.first?.contains?.count ?? 0
         if itemsCount > editSectionsCount {
@@ -83,8 +103,6 @@ class ToolboxTableVC: UITableViewController {
             let paths = (itemsCount..<editSectionsCount).map{ IndexPath(row: $0, section: 0) }
             insertOrDeleteRows(at: paths, with: .fade, insertIf: editing)
         }
-        
-        tableView.endUpdates()
     }
     
     private func insertOrDeleteSections(_ sections: IndexSet, with animation: UITableView.RowAnimation, insertIf: Bool) {
@@ -153,10 +171,13 @@ extension ToolboxTableVC {
         return cell
     }
     
+    // MARK: Editng
+    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return isEditable(indexPath: indexPath)
     }
     
+    /// Handles deleting cells
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         switch editingStyle {
         case .delete:
@@ -170,11 +191,13 @@ extension ToolboxTableVC {
         }
     }
     
+    /// Handles moving cells
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         reorder(sections, source: sourceIndexPath.row, destination: destinationIndexPath.row)
         SharedHandlers.sections.saveChanges()
     }
     
+    /// Prevents rows from being moved under last (uneditable) row
     override func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
         if !isEditable(indexPath: proposedDestinationIndexPath) {
             return IndexPath(row: sections.endIndex - 1, section: 0)
@@ -183,9 +206,11 @@ extension ToolboxTableVC {
     }
     
     private func isEditable(indexPath: IndexPath) -> Bool {
+        // Last cell (when editing) adds new section and should not be moved or edited
         return indexPath.row < sections.endIndex
     }
     
+    /// Handles moving sections when editing, sections are ordered by .order
     private func reorder(_ array: [Section], source: Int, destination: Int) {
         array[source].order = array[destination].order
         if source < destination {
