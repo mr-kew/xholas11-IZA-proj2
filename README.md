@@ -8,7 +8,7 @@ Aplikace Toolbox umožnuje uživateli vytvářet záznamy o nářadí (_tools_) 
 
 Mimo demonstraci práce s _CoreData_ pro účely druhého projektu do IZA, tato aplikace pravděpodobně žádné reálné využití nemá. Po případném rozšíření záznamu o nářadí a přihrádce o další datové položky (fotka, ...) a vyhledávání by aplikace teoreticky mohla být používana k nějaké evidenci reálného nářadí.
 	
-## Použití
+## Použití
 Při prázné databázi je nejdříve nutné vytvořit první přihrádku pomocí tlačítka _Edit_. To přepne tabulku do režimu editace, kde jeden řádek představuje jednu přihrádku. Je možné měnit pořadí ve kterém jsou přihrádky zobrazeny, mazat a vytvářet nové přihrádky a editovat stávající přihrádky (dotykem na příslušném řádku). Přihrádka obsahuje jediný atribut jméno (_Name_), který je povinný a musí být unikátní. Odstranění přihrádky způsobí odstranění všem záznamů o nářadí v dané přihrádce.
 
 Pokud již aplikace obsahuje nějaké sekce, je možné vytvořit nářadí pomocí tlačítka _+_. Pouze atributy jméno (_Name_) a přihrádka (_Section_) jsou povinné při vytváření nového záznamu o nářadí, jméno musí být současně unikátní. Existující záznamy je možné upravit (dotykem na příslušném řádku) a následně odstranit.
