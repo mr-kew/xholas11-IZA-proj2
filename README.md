@@ -1,6 +1,8 @@
 # IZA - Druhý projekt
 David Holas (xholas11)
 
+<https://github.com/mr-kew/xholas11-IZA-proj2>
+
 ## Smysl
 Aplikace Toolbox umožnuje uživateli vytvářet záznamy o nářadí (_tools_) a přihrádkách (_sections_). Každé nářadí patří do právě jedné přihrádky. Nářadí se uživateli zobrazuje po jednotlivých přihrádkách do kterých patří. 
 
